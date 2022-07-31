@@ -1,0 +1,21 @@
+name: Publish NPM
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          cache: 'yarn'
+      - run: yarn --frozen-lockfile
+      - run: yarn lerna run build
+      - run: yarn lerna publish from-git -y --no-verify-access
+        env:
+            NODE_AUTH_TOKEN: ${{secrets.NPM_ACCESS_TOKEN}}
