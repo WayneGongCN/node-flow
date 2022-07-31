@@ -1,0 +1,43 @@
+{
+  "name": "@node-flow/core",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "wayne <me@waynegong.cn>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "types": "lib/",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:WayneGongCN/node-flow.git"
+  },
+  "scripts": {
+    "build:watch": "tsc -p ./tsconfig.dev.json -w",
+    "test:watch": "jest --watch",
+    "lint": "eslint src",
+    "test": "jest",
+    "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
+  },
+  "dependencies": {
+    "conf": "^10.1.2",
+    "log4js": "^6.6.1",
+    "nodemon": "^2.0.19",
+    "typescript": "^4.7.4",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.2",
+    "@types/uuid": "^8.3.4",
+    "jest": "^28.1.3",
+    "typescript": "^4.7.4"
+  }
+}
