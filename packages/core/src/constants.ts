@@ -2,8 +2,7 @@ import path from 'path'
 
 
 // TODO:
-const baseDir = path.join('/Users/waynegong/ndoe-flow/')
-
+const baseDir = path.join(process.cwd(), 'data')
 
 export const DEFAULT_CONF = {
   baseDir,
