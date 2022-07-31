@@ -1,11 +1,3 @@
-# `node-git`
+# `@node-flow/core`
 
 > TODO: description
-
-## Usage
-
-```
-const nodeGit = require('node-git');
-
-// TODO: DEMONSTRATE API
-```
