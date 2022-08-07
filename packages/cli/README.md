@@ -17,78 +17,118 @@ oclif example Hello World CLI
 <!-- usage -->
 ```sh-session
 $ npm install -g @node-flow/cli
-$ flow COMMAND
+$ nf COMMAND
 running command...
-$ flow (--version)
-@node-flow/cli/0.0.0 darwin-x64 node-v14.17.0
-$ flow --help [COMMAND]
+$ nf (--version)
+@node-flow/cli/0.0.1-alpha.3 linux-x64 node-v16.14.2
+$ nf --help [COMMAND]
 USAGE
-  $ flow COMMAND
+  $ nf COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`flow hello PERSON`](#flow-hello-person)
-* [`flow hello world`](#flow-hello-world)
-* [`flow help [COMMAND]`](#flow-help-command)
-* [`flow plugins`](#flow-plugins)
-* [`flow plugins:install PLUGIN...`](#flow-pluginsinstall-plugin)
-* [`flow plugins:inspect PLUGIN...`](#flow-pluginsinspect-plugin)
-* [`flow plugins:install PLUGIN...`](#flow-pluginsinstall-plugin-1)
-* [`flow plugins:link PLUGIN`](#flow-pluginslink-plugin)
-* [`flow plugins:uninstall PLUGIN...`](#flow-pluginsuninstall-plugin)
-* [`flow plugins:uninstall PLUGIN...`](#flow-pluginsuninstall-plugin-1)
-* [`flow plugins:uninstall PLUGIN...`](#flow-pluginsuninstall-plugin-2)
-* [`flow plugins update`](#flow-plugins-update)
+* [`nf flow [FLOWID]`](#nf-flow-flowid)
+* [`nf flow activate [FLOWID]`](#nf-flow-activate-flowid)
+* [`nf flow create FLOWNAME`](#nf-flow-create-flowname)
+* [`nf flow next [FLOWID]`](#nf-flow-next-flowid)
+* [`nf flow remove FLOWNAME`](#nf-flow-remove-flowname)
+* [`nf help [COMMAND]`](#nf-help-command)
+* [`nf plugins`](#nf-plugins)
+* [`nf plugins:install PLUGIN...`](#nf-pluginsinstall-plugin)
+* [`nf plugins:inspect PLUGIN...`](#nf-pluginsinspect-plugin)
+* [`nf plugins:install PLUGIN...`](#nf-pluginsinstall-plugin-1)
+* [`nf plugins:link PLUGIN`](#nf-pluginslink-plugin)
+* [`nf plugins:uninstall PLUGIN...`](#nf-pluginsuninstall-plugin)
+* [`nf plugins:uninstall PLUGIN...`](#nf-pluginsuninstall-plugin-1)
+* [`nf plugins:uninstall PLUGIN...`](#nf-pluginsuninstall-plugin-2)
+* [`nf plugins update`](#nf-plugins-update)
 
-## `flow hello PERSON`
+## `nf flow [FLOWID]`
 
-Say hello
+Create a Flow
 
 ```
 USAGE
-  $ flow hello [PERSON] -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
+  $ nf flow [FLOWID] [-a]
 
 FLAGS
-  -f, --from=<value>  (required) Whom is saying hello
+  -a, --all  List all Flow
 
 DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  Create a Flow
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/WayneGongCN/hello-world/blob/v0.0.0/dist/commands/hello/index.ts)_
+_See code: [dist/commands/flow/index.ts](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.3/dist/commands/flow/index.ts)_
 
-## `flow hello world`
+## `nf flow activate [FLOWID]`
 
-Say hello world
+Create a Flow
 
 ```
 USAGE
-  $ flow hello world
+  $ nf flow activate [FLOWID] [--json]
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ oex hello world
-  hello world! (./src/commands/hello/world.ts)
+  Create a Flow
 ```
 
-## `flow help [COMMAND]`
+## `nf flow create FLOWNAME`
 
-Display help for flow.
+Create a Flow
 
 ```
 USAGE
-  $ flow help [COMMAND] [-n]
+  $ nf flow create [FLOWNAME] [-n <value>]
+
+FLAGS
+  -n, --node=<value>...
+
+DESCRIPTION
+  Create a Flow
+```
+
+## `nf flow next [FLOWID]`
+
+Flow to the next state
+
+```
+USAGE
+  $ nf flow next [FLOWID]
+
+DESCRIPTION
+  Flow to the next state
+
+EXAMPLES
+  flow next
+```
+
+## `nf flow remove FLOWNAME`
+
+Remove a Flow
+
+```
+USAGE
+  $ nf flow remove [FLOWNAME] [--nodes <value>]
+
+FLAGS
+  --nodes=<value>  [default: []]
+
+DESCRIPTION
+  Remove a Flow
+```
+
+## `nf help [COMMAND]`
+
+Display help for nf.
+
+```
+USAGE
+  $ nf help [COMMAND] [-n]
 
 ARGUMENTS
   COMMAND  Command to show help for.
@@ -97,18 +137,18 @@ FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for flow.
+  Display help for nf.
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
 
-## `flow plugins`
+## `nf plugins`
 
 List installed plugins.
 
 ```
 USAGE
-  $ flow plugins [--core]
+  $ nf plugins [--core]
 
 FLAGS
   --core  Show core plugins.
@@ -117,18 +157,18 @@ DESCRIPTION
   List installed plugins.
 
 EXAMPLES
-  $ flow plugins
+  $ nf plugins
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/index.ts)_
 
-## `flow plugins:install PLUGIN...`
+## `nf plugins:install PLUGIN...`
 
 Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ flow plugins:install PLUGIN...
+  $ nf plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN  Plugin to install.
@@ -150,23 +190,23 @@ DESCRIPTION
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
-  $ flow plugins add
+  $ nf plugins add
 
 EXAMPLES
-  $ flow plugins:install myplugin 
+  $ nf plugins:install myplugin 
 
-  $ flow plugins:install https://github.com/someuser/someplugin
+  $ nf plugins:install https://github.com/someuser/someplugin
 
-  $ flow plugins:install someuser/someplugin
+  $ nf plugins:install someuser/someplugin
 ```
 
-## `flow plugins:inspect PLUGIN...`
+## `nf plugins:inspect PLUGIN...`
 
 Displays installation properties of a plugin.
 
 ```
 USAGE
-  $ flow plugins:inspect PLUGIN...
+  $ nf plugins:inspect PLUGIN...
 
 ARGUMENTS
   PLUGIN  [default: .] Plugin to inspect.
@@ -179,16 +219,16 @@ DESCRIPTION
   Displays installation properties of a plugin.
 
 EXAMPLES
-  $ flow plugins:inspect myplugin
+  $ nf plugins:inspect myplugin
 ```
 
-## `flow plugins:install PLUGIN...`
+## `nf plugins:install PLUGIN...`
 
 Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ flow plugins:install PLUGIN...
+  $ nf plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN  Plugin to install.
@@ -210,23 +250,23 @@ DESCRIPTION
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
-  $ flow plugins add
+  $ nf plugins add
 
 EXAMPLES
-  $ flow plugins:install myplugin 
+  $ nf plugins:install myplugin 
 
-  $ flow plugins:install https://github.com/someuser/someplugin
+  $ nf plugins:install https://github.com/someuser/someplugin
 
-  $ flow plugins:install someuser/someplugin
+  $ nf plugins:install someuser/someplugin
 ```
 
-## `flow plugins:link PLUGIN`
+## `nf plugins:link PLUGIN`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ flow plugins:link PLUGIN
+  $ nf plugins:link PLUGIN
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -244,16 +284,16 @@ DESCRIPTION
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLES
-  $ flow plugins:link myplugin
+  $ nf plugins:link myplugin
 ```
 
-## `flow plugins:uninstall PLUGIN...`
+## `nf plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ flow plugins:uninstall PLUGIN...
+  $ nf plugins:uninstall PLUGIN...
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -266,17 +306,17 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ flow plugins unlink
-  $ flow plugins remove
+  $ nf plugins unlink
+  $ nf plugins remove
 ```
 
-## `flow plugins:uninstall PLUGIN...`
+## `nf plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ flow plugins:uninstall PLUGIN...
+  $ nf plugins:uninstall PLUGIN...
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -289,17 +329,17 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ flow plugins unlink
-  $ flow plugins remove
+  $ nf plugins unlink
+  $ nf plugins remove
 ```
 
-## `flow plugins:uninstall PLUGIN...`
+## `nf plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ flow plugins:uninstall PLUGIN...
+  $ nf plugins:uninstall PLUGIN...
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -312,17 +352,17 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ flow plugins unlink
-  $ flow plugins remove
+  $ nf plugins unlink
+  $ nf plugins remove
 ```
 
-## `flow plugins update`
+## `nf plugins update`
 
 Update installed plugins.
 
 ```
 USAGE
-  $ flow plugins update [-h] [-v]
+  $ nf plugins update [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
