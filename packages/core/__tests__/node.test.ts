@@ -1,4 +1,8 @@
-const { createNode, NodeState, NodeEvent } = require('../lib/node')
+/* eslint-disable jest/no-done-callback */
+/* eslint-disable jest/no-conditional-expect */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+import { createNode, NodeState, NodeEvent } from '../src/node'
 
 
 describe('Create Node', () => {

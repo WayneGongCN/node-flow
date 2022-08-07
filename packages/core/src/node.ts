@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { v4 as uuid } from 'uuid'
 import { Flow } from './flow'
 import log4js from './logger'
-import { nodeStorage } from './storage'
+import { nodeStorage, saveNodeData } from './storage'
 
 
 const logger = log4js.getLogger('node')
@@ -11,6 +11,9 @@ const logger = log4js.getLogger('node')
 export interface NodeData {
   type: string;
   name: string;
+
+  id?: string;
+  state?: NodeState;
 }
 
 
@@ -24,31 +27,28 @@ export enum NodeState {
   REGISTERED = 'REGISTERED',
   ACTIVATE = 'ACTIVATE',
   DONE = 'DONE',
+  READY = 'READY',
 }
 
 export class Node extends EventEmitter {
   public id: string
   public name: string
+  public type: string
   public nodeState: NodeState
   public flow?: Flow
 
   // private ctx: any
 
-
-  static save(node: Node) {
-    nodeStorage.set(`nodes.${node.id}`, node.serialize())
-  }
-
-
   constructor(opt: NodeData) {
     super()
-    this.id = uuid()
-    this.nodeState = NodeState.INIT
-
-    const { name } = opt
+    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE } = opt
+    this.type = type
     this.name = name
-    this.state = NodeState.CREATE
+    this.id = id
+    this.nodeState = state
+
     this.initEvent()
+    this.state = state || NodeState.READY
   }
 
 
@@ -57,22 +57,30 @@ export class Node extends EventEmitter {
   }
 
   handleNodeStateChange(): void {
-    logger.info(this.id, `state change ${this.state}`)
-    Node.save(this)
+    logger.debug(this.id, `state change ${this.state}`)
+    this.save()
   }
 
-  registerFlow(): void {
-    logger.info('registerFlow')
+  registerFlow() {
+    logger.debug('registerFlow')
     this.state = NodeState.REGISTERED
   }
 
-  serialize() {
+  serialize(): NodeData {
     return {
-      flow: this.flow?.id
+      id: this.id,
+      name: this.name,
+      state: this.state,
+      type: this.type,
     }
   }
 
+  save() {
+    return saveNodeData(this.id, this.serialize())
+  }
+
   set state(state: NodeState) {
+    if (this.nodeState === state) return
     this.nodeState = state
     this.emit(NodeEvent.ON_STATE_CHANGE, this)
   }

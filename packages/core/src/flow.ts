@@ -2,21 +2,23 @@ import EventEmitter from 'events'
 import { v4 as uuid } from 'uuid'
 import log4js from './logger'
 import { checkoutNode, Node, NodeData as NodeData, NodeState } from './node'
-import { flowStorage } from './storage'
+import { getActivateFlowID, getFlowDataByID, listFlow, removeFlowByID, saveActivateFlowID, saveFlowData } from './storage'
 
 const logger = log4js.getLogger('flow')
 
 export interface FlowData {
   name: string;
-  nodes: Node['id'][] | NodeData[]
+  nodes: Node['id'][] | NodeData[];
+
+  id?: string;
+  state?: FlowState;
+  activatedIndex?: number;
 }
 
 export enum FlowState {
-  INIT,
-  CREATE,
-  READY,
-  RUNNING,
-  END
+  INIT = 'INIT',
+  RUNNING = 'RUNNING',
+  END = 'END',
 }
 
 export enum FlowEvent {
@@ -28,65 +30,102 @@ export enum FlowEvent {
 
 export class Flow extends EventEmitter {
   public id: string
-  public flowState: FlowState
+  protected flowState: FlowState
   public name: string
 
   public nodeMap: Record<Node['id'], Node>
   public nodeList: Node[]
   public activatedIndex: number
-  public activatedNodeID: Node['id'] | null
 
   public ctx: unknown
 
-  static save(flow: Flow) {
-    flowStorage.set(`flows.${flow.id}`, flow.serialize())
+
+  /**
+   * 
+   */
+  static listFlow(all = false): Promise<FlowData[]> {
+    return all ? listFlow() : listFlow(flow => flow.state !== FlowState.END)
+  }
+
+  /**
+   * 
+   */
+  static async getActivatedFlow() {
+    const flowID = await getActivateFlowID()
+    if (!flowID) return null
+    return Flow.checkoutFlow(flowID)
   }
 
 
-  static checkout(flowID: string) {
-    const flowData = flowStorage.get(`flows.${flowID}`) as FlowData
-    return new Flow(flowData)
+  /**
+   * 
+   */
+  static async checkoutFlow(flowID: Flow['id']): Promise<Flow | null> {
+    const flowData = await getFlowDataByID(flowID)
+    if (!flowData) return null
+
+    const flow = new Flow(flowData)
+    return flow
   }
 
 
   constructor(opt: FlowData) {
     super()
-    this.id = uuid()
-    this.flowState = FlowState.INIT
     this.nodeMap = {}
     this.nodeList = []
-    this.activatedIndex = -1
-    this.activatedNodeID = null
 
-    const { name, nodes } = opt
+
+    const { name = 'untitled', nodes = [], id = uuid(), state = FlowState.INIT, activatedIndex = -1 } = opt
     this.name = name
+    this.id = id
+    this.flowState = state
+    this.activatedIndex = activatedIndex
+
 
     this.initEvent()
     this.registerNodes(nodes)
-    this.state = FlowState.READY
   }
 
   // 流程编排
 
 
-  initEvent(): void {
+  initEvent() {
     this.on(FlowEvent.ON_STATE_CHANGE, this.handleFlowStateChange.bind(this))
   }
 
-  handleFlowStateChange(flow: Flow): void {
-    Flow.save(flow)
+  handleFlowStateChange() {
+    this.save()
   }
 
-  serialize() {
+  async activate() {
+    await this.save()
+    return saveActivateFlowID(this.id)
+  }
+
+  async save() {
+    return saveFlowData(this.id, this.serialize())
+  }
+
+  async remove() {
+    const activateID = await getActivateFlowID()
+    if (activateID === this.id) await saveActivateFlowID(null)
+    await removeFlowByID(this.id)
+  }
+
+  serialize(): FlowData {
     return {
+      id: this.id,
+      name: this.name,
+      state: this.state,
+      activatedIndex: this.activatedIndex,
       nodes: Object.values(this.nodeMap).map(node => node.id)
     }
   }
 
   registerNodes(nodes: FlowData['nodes']): void {
-    logger.info('registerNodes')
+    logger.info('registerNodes', nodes)
 
-    this.nodeList = Object.values(nodes).map((node: string | NodeData) => {
+    this.nodeList = nodes.map((node: string | NodeData) => {
       const instance = checkoutNode(node)
       instance.registerFlow()
       this.nodeMap[instance.id] = instance
@@ -95,6 +134,9 @@ export class Flow extends EventEmitter {
     this.emit(FlowEvent.ON_REGISTER, this)
   }
 
+  /**
+   * 
+   */
   next() {
     logger.info('next')
     if (this.state === FlowState.END) throw new Error('Flow is END')
@@ -102,22 +144,21 @@ export class Flow extends EventEmitter {
     this.activatedIndex += 1
 
     if (this.activatedIndex > -1 && this.activatedIndex < this.nodeList.length) this.state = FlowState.RUNNING
-    else if (this.activatedIndex>= this.nodeList.length) this.state = FlowState.END
+    else if (this.activatedIndex >= this.nodeList.length) this.state = FlowState.END
 
     if (this.state === FlowState.END) {
       this.activatedIndex = -1
-      this.activatedNodeID = null
       return
     }
-    
+
     const node = this.nodeList[this.activatedIndex]
-    this.activatedNodeID = node.id
     node.state = NodeState.ACTIVATE
     this.emit(FlowEvent.ON_NEXT, this)
   }
 
 
   set state(state: FlowState) {
+    if (this.flowState === state) return
     this.flowState = state
     this.emit(FlowEvent.ON_STATE_CHANGE, this)
   }
@@ -126,9 +167,14 @@ export class Flow extends EventEmitter {
     return this.flowState
   }
 
-  get activatedNode() {
-    return this.activatedNodeID && this.nodeMap[this.activatedNodeID]
+
+  get activateNodeID() {
+    if (this.activatedIndex === -1) return null
+    return this.nodeList[this.activatedIndex]?.id
   }
 
+  get activatedNode(): Node | null {
+    return this.activateNodeID ? this.nodeMap[this.activateNodeID]: null
+  }
 }
 
