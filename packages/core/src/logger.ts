@@ -1,14 +1,14 @@
 import log4js from 'log4js'
 import path from 'path'
-import { conf } from './storage'
+import { DEFAULT_CONF } from './constants'
 
 
-const getLogFilePath = (file: string) => path.join(conf.get('logDir'), file)
+const getLogFilePath = (file: string) => path.join(DEFAULT_CONF.logDir, file)
 
 
 log4js.configure({
   appenders: {
-    out: { type: 'stdout' },
+    stdout: { type: 'stdout' },
 
     errorFile: { type: 'dateFile', filename: getLogFilePath('err.log'), pattern: 'yyyy-MM-dd', compress: true, numBackups: 3 },
     warnFile: { type: 'dateFile', filename: getLogFilePath('warn.log'), pattern: 'yyyy-MM-dd', compress: true, numBackups: 3 },
@@ -23,17 +23,14 @@ log4js.configure({
     trace: { type: 'logLevelFilter', appender: 'traceFile', level: 'trace' }
   },
   categories: {
-    default: { appenders: ['out', 'trace', 'debug', 'info', 'warn', 'error'], level: 'trace' }
+    default: { appenders: ['stdout', 'trace', 'debug', 'info', 'warn', 'error'], level: 'trace' }
   }
 })
-
 
 /**
  * 默认 Logger
  */
 export const logger = log4js.getLogger('app')
-logger.info('current log level trace')
-
 
 /**
  * 处理未捕获错误
