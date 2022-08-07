@@ -1,6 +1,6 @@
 {
   "name": "@node-flow/cli",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "description": "oclif example Hello World CLI",
   "author": "wayne @WayneGongCN",
   "bin": {
