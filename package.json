@@ -18,7 +18,8 @@
     "lint": "lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build --skip-nx-cache",
-    "prerelease": "lerna  version --conventional-commits --conventional-prerelease --amend"
+    "prerelease": "lerna  version --conventional-commits --conventional-prerelease",
+    "release": "lerna  version --conventional-commits"
   },
   "devDependencies": {
     "@types/node": "^18.6.3",

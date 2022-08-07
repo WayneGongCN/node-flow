@@ -8,24 +8,20 @@ export default class FlowRemove extends Command {
 
   static examples = []
 
-  static flags = {
-    nodes: Flags.string({
-      default: '[]',
-      parse: v => JSON.parse(v)
-    })
-  }
+  static flags = {}
 
-  static args = [{ name: 'flowName', required: true }]
+  static args = [{ name: 'flowID', required: true }]
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(FlowRemove)
     logger.debug('CMD flow create params', JSON.stringify({ args, flags }))
+    const { flowID } = args
 
-    const { flowName } = args
-    const { nodes } = flags
-
-
-    const flow = new Flow({ name: flowName, nodes })
-    await flow.remove()
+    const flow = await Flow.checkoutFlow(flowID)
+    if (flow) {
+      await flow.remove()
+    } else {
+      throw new Error(`No Flow with ID ${flowID}`)
+    }
   }
 }
