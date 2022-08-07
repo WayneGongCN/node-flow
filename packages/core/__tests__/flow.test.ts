@@ -22,7 +22,7 @@ describe('Create flow', () => {
   const flow = new Flow({ name: 'test flow', nodes: [{ name: 'node1', type: 'node' }] })
 
   test('Flow state', () => {
-    expect(flow.state).toBe(FlowState.INIT)
+    expect(flow.state).toBe(FlowState.CREATE)
   })
 
   test('Flow activateNodeIndex', () => {
@@ -84,7 +84,7 @@ describe('Flow next method', () => {
   const flow = new Flow({ name: 'test flow', nodes: [{ name: 'node1', type: 'node' }, { name: 'node2', type: 'node' }] })
 
   test('Flow state', () => {
-    expect(flow.state).toBe(FlowState.INIT)
+    expect(flow.state).toBe(FlowState.CREATE)
   })
 
   test('Flow next 1', () => {
