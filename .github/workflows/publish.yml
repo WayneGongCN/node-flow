@@ -26,4 +26,7 @@ jobs:
         env:
           NPM_ACCESS_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
-      - run: yarn lerna publish from-git -y --no-verify-access
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_ACCESS_TOKEN}}
+        run: yarn lerna publish from-package -y --no-push --no-verify-access

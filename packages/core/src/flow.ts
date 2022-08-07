@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import { v4 as uuid } from 'uuid'
 import log4js from './logger'
-import { checkoutNode, Node, NodeData as NodeData, NodeState } from './node'
+import { Node, NodeData as NodeData, NodeState } from './node'
 import { getActivateFlowID, getFlowDataByID, listFlow, removeFlowByID, saveActivateFlowID, saveFlowData } from './storage'
 
 const logger = log4js.getLogger('flow')
@@ -16,8 +16,8 @@ export interface FlowData {
 }
 
 export enum FlowState {
-  INIT = 'INIT',
-  RUNNING = 'RUNNING',
+  CREATE = 'CREATE',
+  PROCESSING = 'processing',
   END = 'END',
 }
 
@@ -75,7 +75,7 @@ export class Flow extends EventEmitter {
     this.nodeList = []
 
 
-    const { name = 'untitled', nodes = [], id = uuid(), state = FlowState.INIT, activatedIndex = -1 } = opt
+    const { name = 'untitled', nodes = [], id = uuid(), state = FlowState.CREATE, activatedIndex = -1 } = opt
     this.name = name
     this.id = id
     this.flowState = state
@@ -126,7 +126,7 @@ export class Flow extends EventEmitter {
     logger.info('registerNodes', nodes)
 
     this.nodeList = nodes.map((node: string | NodeData) => {
-      const instance = checkoutNode(node)
+      const instance = typeof node === 'string' ? Node.checkout(node) : Node.create(node)
       instance.registerFlow()
       this.nodeMap[instance.id] = instance
       return instance
@@ -143,7 +143,7 @@ export class Flow extends EventEmitter {
 
     this.activatedIndex += 1
 
-    if (this.activatedIndex > -1 && this.activatedIndex < this.nodeList.length) this.state = FlowState.RUNNING
+    if (this.activatedIndex > -1 && this.activatedIndex < this.nodeList.length) this.state = FlowState.PROCESSING
     else if (this.activatedIndex >= this.nodeList.length) this.state = FlowState.END
 
     if (this.state === FlowState.END) {
