@@ -5,10 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 0.0.1-alpha.5 (2022-08-07)
 
-**Note:** Version bump only for package node-flow
-
-
-
-
-
-# 0.0.0 (2022-08-07)
+**Note:** Version bump only for package @node-flow/cli
