@@ -21,14 +21,14 @@ export enum NodeEvent {
   ON_STATE_CHANGE = 'ON_STATE_CHANGE',
 }
 
+
 export enum NodeState {
-  INIT = 'INIT',
   CREATE = 'CREATE',
   REGISTERED = 'REGISTERED',
   ACTIVATE = 'ACTIVATE',
-  DONE = 'DONE',
-  READY = 'READY',
+  COMPLETE = 'COMPLETE'
 }
+
 
 export class Node extends EventEmitter {
   public id: string
@@ -37,7 +37,27 @@ export class Node extends EventEmitter {
   public nodeState: NodeState
   public flow?: Flow
 
-  // private ctx: any
+  private ctx: any
+
+
+  static checkout (node: string) {
+    let nodeData = null
+    if (typeof node === 'string') nodeData = nodeStorage.get(`nodes.${node}`) as NodeData | null
+    else nodeData = node
+    if (!nodeData) throw new Error('Node ID Error')
+
+    return Node.create(nodeData)
+  }
+
+
+  static create (nodeData: NodeData): Node {
+    const { type } = nodeData
+    const TypeNode = typeNodeMap[type]
+    if (!TypeNode) throw new Error('Node Type Error')
+  
+    const instance = new TypeNode(nodeData)
+    return instance
+  }
 
   constructor(opt: NodeData) {
     super()
@@ -48,7 +68,6 @@ export class Node extends EventEmitter {
     this.nodeState = state
 
     this.initEvent()
-    this.state = state || NodeState.READY
   }
 
 
@@ -56,15 +75,18 @@ export class Node extends EventEmitter {
     this.on(NodeEvent.ON_STATE_CHANGE, this.handleNodeStateChange.bind(this))
   }
 
+
   handleNodeStateChange(): void {
     logger.debug(this.id, `state change ${this.state}`)
     this.save()
   }
 
+
   registerFlow() {
     logger.debug('registerFlow')
     this.state = NodeState.REGISTERED
   }
+
 
   serialize(): NodeData {
     return {
@@ -75,9 +97,11 @@ export class Node extends EventEmitter {
     }
   }
 
+  
   save() {
     return saveNodeData(this.id, this.serialize())
   }
+  
 
   set state(state: NodeState) {
     if (this.nodeState === state) return
@@ -104,30 +128,4 @@ const typeNodeMap: Record<string, typeof Node> = { node: Node }
 export function registerNode(type: string, TypeNode: typeof Node) {
   if (typeNodeMap[type]) throw new Error(`${type} Node extended`)
   typeNodeMap[type] = TypeNode
-}
-
-
-/**
- * 实例化 Node 工厂函数
- * @param nodeData
- * @returns 
- */
-export function createNode<P extends NodeData, R extends Node>(nodeData: P): R | Node {
-  const { type } = nodeData
-  const TypeNode = typeNodeMap[type]
-  if (!TypeNode) throw new Error('Node Type Error')
-
-  const instance = new TypeNode(nodeData)
-  return instance
-}
-
-
-
-export function checkoutNode(node: string | NodeData) {
-  let nodeData = null
-  if (typeof node === 'string') nodeData = nodeStorage.get(`nodes.${node}`) as NodeData | null
-  else nodeData = node
-  if (!nodeData) throw new Error('Node ID Error')
-
-  return createNode(nodeData)
 }
