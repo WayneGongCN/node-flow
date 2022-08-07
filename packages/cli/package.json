@@ -16,6 +16,10 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "dependencies": {
     "@node-flow/core": "^0.0.1-alpha.3",
     "@oclif/core": "^1",
