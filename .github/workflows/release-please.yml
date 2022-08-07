@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - master
+
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          command: manifest
+          token: ${{secrets.GITHUB_TOKEN}}
+          default-branch: master
+
+      - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.releases_created }}
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        if: ${{ steps.release.outputs.releases_created }}
+        with:
+          node-version: '16.x'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.releases_created }}
+        run: yarn --frozen-lockfile
+
+      - name: Build packages
+        if: ${{ steps.release.outputs.releases_created }}
+        run: yarn lerna run build
+
+      - name: Publish to NPM
+        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_ACCESS_TOKEN}}
+        run: yarn lerna publish from-package -y --no-push --no-verify-access
