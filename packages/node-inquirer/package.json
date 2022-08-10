@@ -25,10 +25,14 @@
     "build:watch": "tsc -p ./tsconfig.dev.json -w",
     "test:watch": "jest --watch",
     "lint": "eslint src",
-    "test": "jest",
+    "test": "echo todo",
     "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
   },
   "dependencies": {
-    "@node-flow/core": "^0.0.1-alpha.5"
+    "@node-flow/core": "^0.0.1-alpha.5",
+    "inquirer": "8"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.0"
   }
 }

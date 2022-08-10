@@ -16,16 +16,3 @@ describe('Create Node', () => {
     expect(node.state).toBe(NodeState.CREATE)
   })
 })
-
-
-describe('Node event', () => {
-  const node = Node.create({ name: 'node', type: 'node' })
-
-  test('Event ON_STATE_CHANGE', (done) => {
-    node.on(NodeEvent.ON_STATE_CHANGE, (n) => {
-      expect(n.state).toBe(NodeState.ACTIVATE)
-      done()
-    })
-    node.state = NodeState.ACTIVATE
-  })
-})

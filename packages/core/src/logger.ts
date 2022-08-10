@@ -32,11 +32,16 @@ log4js.configure({
  */
 export const logger = log4js.getLogger('app')
 
+
 /**
  * 处理未捕获错误
  */
 process.on('unhandledRejection', (reason, p) => {
-  logger.error('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason)
+  logger.error('unhandledRejection at: Promise ', p, reason)
+})
+
+process.on('uncaughtException', (reason, p) => {
+  logger.error('uncaughtException', reason)
 })
 
 
@@ -47,5 +52,6 @@ export const httpLogger = log4js.connectLogger(
   log4js.getLogger('http'),
   { level: 'auto', format: (req, res, format) => format('Request :status :remote-addr :method :url :referrer') }
 )
+
 
 export default log4js
