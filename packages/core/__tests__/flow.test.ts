@@ -3,7 +3,7 @@
 import { Flow } from '../src/flow'
 import { flowStorage } from '../src/storage'
 import { FlowState, FlowEvent } from '../src/flow'
-import { nodeStorage } from '../lib/storage'
+import { nodeStorage } from '../src/storage'
 
 
 beforeEach(() => {
@@ -81,52 +81,8 @@ describe('Flow remove', () => {
 
 
 describe('Flow next method', () => {
-  const flow = new Flow({ name: 'test flow', nodes: [{ name: 'node1', type: 'node' }, { name: 'node2', type: 'node' }] })
-
   test('Flow state', () => {
+    const flow = new Flow({ name: 'test flow', nodes: [{ name: 'node1', type: 'node' }, { name: 'node2', type: 'node' }] })
     expect(flow.state).toBe(FlowState.CREATE)
-  })
-
-  test('Flow next 1', () => {
-    flow.next()
-    expect(flow.activatedIndex).toBe(0)
-    expect(flow.activateNodeID).not.toBe(null)
-    expect(flow.activatedNode!.name).toBe('node1')
-  })
-
-  test('Flow next 2', () => {
-    flow.next()
-    expect(flow.activatedIndex).toBe(1)
-    expect(flow.activateNodeID).not.toBe(null)
-    expect(flow.activatedNode!.name).toBe('node2')
-  })
-
-  test('Flow next 3', () => {
-    flow.next()
-    expect(flow.activatedIndex).toBe(-1)
-    expect(flow.activateNodeID).toBe(null)
-    expect(flow.state).toBe(FlowState.END)
-  })
-
-  test('Flow next 4', () => {
-    expect(() => flow.next()).toThrowError()
-  })
-})
-
-
-
-describe('Flow event', () => {
-  const flow = new Flow({ name: 'test flow', nodes: [{ name: 'node1', type: 'node' }, { name: 'node2', type: 'node' }] })
-
-  // eslint-disable-next-line jest/no-done-callback
-  test('Event ON_NEXT', (done) => {
-    flow.on(FlowEvent.ON_NEXT, (node) => {
-      expect(node.name).toBe('test flow')
-      expect(flow.activatedIndex).toBe(0)
-      expect(flow.activateNodeID).not.toBe(null)
-      expect(flow.activatedNode!.name).toBe('node1')
-      done()
-    })
-    flow.next()
   })
 })

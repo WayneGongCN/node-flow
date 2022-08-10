@@ -1,14 +1,14 @@
 import EventEmitter from 'events'
+import { Logger } from 'log4js'
 import { v4 as uuid } from 'uuid'
 import log4js from './logger'
-import { Node, NodeData as NodeData, NodeState } from './node'
+import { Node, NodeData, NodeEvent, NodeState } from './node'
 import { getActivateFlowID, getFlowDataByID, listFlow, removeFlowByID, saveActivateFlowID, saveFlowData } from './storage'
-
-const logger = log4js.getLogger('flow')
 
 export interface FlowData {
   name: string;
-  nodes: Node['id'][] | NodeData[];
+  // TODO: types
+  nodes: Node['id'][] | any[];
 
   id?: string;
   state?: FlowState;
@@ -30,14 +30,15 @@ export enum FlowEvent {
 
 export class Flow extends EventEmitter {
   public id: string
-  protected flowState: FlowState
+  public flowState: FlowState
   public name: string
 
   public nodeMap: Record<Node['id'], Node>
   public nodeList: Node[]
   public activatedIndex: number
-
   public ctx: unknown
+
+  public logger: Logger
 
 
   /**
@@ -80,7 +81,7 @@ export class Flow extends EventEmitter {
     this.id = id
     this.flowState = state
     this.activatedIndex = activatedIndex
-
+    this.logger = log4js.getLogger(`[FLOW] ${this.id}`)
 
     this.initEvent()
     this.registerNodes(nodes)
@@ -123,13 +124,12 @@ export class Flow extends EventEmitter {
   }
 
   registerNodes(nodes: FlowData['nodes']): void {
-    logger.info('registerNodes', nodes)
-
-    this.nodeList = nodes.map((node: string | NodeData) => {
-      const instance = typeof node === 'string' ? Node.checkout(node) : Node.create(node)
-      instance.registerFlow()
-      this.nodeMap[instance.id] = instance
-      return instance
+    this.nodeList = nodes.map((nodeDataOrID: string | NodeData) => {
+      const node = typeof nodeDataOrID === 'string' ? Node.checkout(nodeDataOrID) : Node.create(nodeDataOrID)
+      node.registerFlow()
+      node.on(NodeEvent.ON_COMPLETE, this.next.bind(this))
+      this.nodeMap[node.id] = node
+      return node
     })
     this.emit(FlowEvent.ON_REGISTER, this)
   }
@@ -138,27 +138,28 @@ export class Flow extends EventEmitter {
    * 
    */
   next() {
-    logger.info('next')
+    this.logger.info('next')
     if (this.state === FlowState.END) throw new Error('Flow is END')
 
     this.activatedIndex += 1
-
     if (this.activatedIndex > -1 && this.activatedIndex < this.nodeList.length) this.state = FlowState.PROCESSING
     else if (this.activatedIndex >= this.nodeList.length) this.state = FlowState.END
 
     if (this.state === FlowState.END) {
       this.activatedIndex = -1
-      return
+      return null
     }
 
     const node = this.nodeList[this.activatedIndex]
     node.state = NodeState.ACTIVATE
     this.emit(FlowEvent.ON_NEXT, this)
+    return node
   }
 
 
   set state(state: FlowState) {
     if (this.flowState === state) return
+    this.logger.debug(`state change ${this.flowState} --> ${state}`)
     this.flowState = state
     this.emit(FlowEvent.ON_STATE_CHANGE, this)
   }
@@ -166,7 +167,6 @@ export class Flow extends EventEmitter {
   get state() {
     return this.flowState
   }
-
 
   get activateNodeID() {
     if (this.activatedIndex === -1) return null
