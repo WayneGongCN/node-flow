@@ -40,7 +40,7 @@ process.on('unhandledRejection', (reason, p) => {
   logger.error('unhandledRejection at: Promise ', p, reason)
 })
 
-process.on('uncaughtException', (reason, p) => {
+process.on('uncaughtException', (reason) => {
   logger.error('uncaughtException', reason)
 })
 

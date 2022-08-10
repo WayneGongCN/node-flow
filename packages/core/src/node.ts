@@ -53,7 +53,7 @@ export class Node extends EventEmitter {
   public nodeCtx: any
   public flow?: Flow
 
-  private logger: Logger;
+  private logger: Logger
 
 
   static checkout(node: string) {
@@ -73,6 +73,7 @@ export class Node extends EventEmitter {
 
     const instance = new TypeNode(nodeData)
     // TODO: types
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return instance
   }
@@ -103,6 +104,7 @@ export class Node extends EventEmitter {
       [NodeState.COMPLETE]: NodeEvent.ON_COMPLETE,
     }
     // TODO: types
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     eventMap[this.state] && this.emit(eventMap[this.state], this)
 
@@ -150,7 +152,7 @@ export class Node extends EventEmitter {
 
 
   set ctx(ctx: any) {
-    this.logger.debug(`ctx change [T]`)
+    this.logger.debug('ctx change [T]')
     this.logger.trace(`ctx change ${JSON.stringify(ctx)}`)
     this.nodeCtx = ctx
     this.emit(NodeEvent.ON_CTX_CHANGE, this)
