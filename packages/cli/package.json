@@ -55,6 +55,7 @@
     }
   },
   "scripts": {
+    "lint": "eslint src test",
     "build": "shx rm -rf dist && tsc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "echo done",

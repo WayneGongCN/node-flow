@@ -1,6 +1,5 @@
 import { CliUx, Command, Flags } from '@oclif/core'
 import { Flow } from '@node-flow/core'
-import { FlowData } from '@node-flow/core/lib/flow'
 import { logger } from '@node-flow/core/lib/logger'
 
 
@@ -19,7 +18,7 @@ export default class FlowList extends Command {
     const { args, flags } = await this.parse(FlowList)
     logger.debug('CMD flow create params', JSON.stringify({ args, flags }))
     
-    const { flowID } = args
+    // const { flowID } = args
     const { all = false } = flags
 
     const flowList = await Flow.listFlow(all)

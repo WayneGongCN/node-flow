@@ -1,8 +1,4 @@
-/* eslint-disable jest/no-done-callback */
-/* eslint-disable jest/no-conditional-expect */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { Node, NodeState, NodeEvent } from '../src/node'
+import { Node, NodeState } from '../src/node'
 
 
 describe('Create Node', () => {
