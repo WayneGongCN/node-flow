@@ -46,9 +46,8 @@
     "ts-jest": "^28.0.7"
   },
   "lint-staged": {
-    "**/*.ts": [
-      "eslint --fix",
-      "tsc -p tsconfig.json --noEmit"
+    "**/*.{ts,js}": [
+      "eslint --fix"
     ]
   },
   "config": {

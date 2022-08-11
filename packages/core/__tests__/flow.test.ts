@@ -1,8 +1,6 @@
-/* eslint-disable jest/no-conditional-expect */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Flow } from '../src/flow'
 import { flowStorage } from '../src/storage'
-import { FlowState, FlowEvent } from '../src/flow'
+import { FlowState } from '../src/flow'
 import { nodeStorage } from '../src/storage'
 
 

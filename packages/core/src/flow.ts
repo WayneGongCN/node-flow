@@ -7,8 +7,7 @@ import { getActivateFlowID, getFlowDataByID, listFlow, removeFlowByID, saveActiv
 
 export interface FlowData {
   name: string;
-  // TODO: types
-  nodes: Node['id'][] | any[];
+  nodes: Node['id'][] | NodeData[];
 
   id?: string;
   state?: FlowState;

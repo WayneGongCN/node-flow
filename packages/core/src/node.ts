@@ -50,7 +50,7 @@ export class Node extends EventEmitter {
   public name: string
   public type: string
   public nodeState: NodeState
-  public nodeCtx: any
+  public nodeCtx: unknown
   public flow?: Flow
 
   private logger: Logger
@@ -72,7 +72,6 @@ export class Node extends EventEmitter {
     if (!TypeNode) throw new Error('Node Type Error')
 
     const instance = new TypeNode(nodeData)
-    // TODO: types
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return instance
@@ -103,7 +102,6 @@ export class Node extends EventEmitter {
       [NodeState.ACTIVATE]: NodeEvent.ON_ACTIVATE,
       [NodeState.COMPLETE]: NodeEvent.ON_COMPLETE,
     }
-    // TODO: types
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     eventMap[this.state] && this.emit(eventMap[this.state], this)
@@ -151,7 +149,7 @@ export class Node extends EventEmitter {
   }
 
 
-  set ctx(ctx: any) {
+  set ctx(ctx: unknown) {
     this.logger.debug('ctx change [T]')
     this.logger.trace(`ctx change ${JSON.stringify(ctx)}`)
     this.nodeCtx = ctx

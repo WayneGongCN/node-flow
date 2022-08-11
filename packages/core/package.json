@@ -24,7 +24,7 @@
   "scripts": {
     "build:watch": "tsc -p ./tsconfig.dev.json -w",
     "test:watch": "jest --watch",
-    "lint": "eslint src",
+    "lint": "eslint src __tests__",
     "test": "jest",
     "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
   },
