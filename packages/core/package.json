@@ -21,6 +21,10 @@
     "type": "git",
     "url": "git@github.com:WayneGongCN/node-flow.git"
   },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "readmeFile": "./README.md"
+  },
   "scripts": {
     "build:watch": "tsc -p ./tsconfig.dev.json -w",
     "test:watch": "jest --watch",
