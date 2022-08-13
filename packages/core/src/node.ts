@@ -1,18 +1,19 @@
 import EventEmitter from 'events'
 import { Logger } from 'log4js'
 import { v4 as uuid } from 'uuid'
-import { Flow } from './flow'
+import { NodeFlowEvent } from './flow'
 import log4js from './logger'
 import { nodeStorage, saveNodeData } from './storage'
 
 
+const nodeLogger = log4js.getLogger('NODE')
+
 /**
- * 注册自定义 Node
- * @param type 
- * @param TypeNode 
  */
 export const typeNodeMap: Record<string, typeof Node> = {}
-export function registerNode(TypeNode: typeof Node) {
+// TODO: types
+export function registerNode(TypeNode: any) {
+  nodeLogger.log('registerNode: ', TypeNode.type)
   const type = TypeNode.type
   if (typeNodeMap[type]) throw new Error(`${type} Node extended`)
   typeNodeMap[type] = TypeNode
@@ -21,17 +22,17 @@ export function registerNode(TypeNode: typeof Node) {
 
 export interface NodeData {
   type: string;
-  name: string;
+  name?: string;
   id?: string;
   state?: NodeState;
+  scope?: string;
 }
 
 
 export enum NodeEvent {
-  ON_STATE_CHANGE = 'ON_STATE_CHANGE',
-  ON_ACTIVATE = 'ON_ACTIVATE',
-  ON_COMPLETE = 'ON_COMPLETE',
-  ON_CTX_CHANGE = 'ON_CTX_CHANGE',
+  STATE_CHANGE = 'STATE_CHANGE',
+  ACTIVATE = 'ACTIVATE',
+  COMPLETE = 'COMPLETE'
 }
 
 
@@ -43,31 +44,28 @@ export enum NodeState {
 }
 
 
-export class Node extends EventEmitter {
+export class Node<T extends NodeData> extends EventEmitter {
   static type = 'node'
 
   public id: string
   public name: string
   public type: string
   public nodeState: NodeState
-  public nodeCtx: unknown
-  public flow?: Flow
-
-  private logger: Logger
+  public logger: Logger
 
 
   static checkout(node: string) {
-    let nodeData = null
-    if (typeof node === 'string') nodeData = nodeStorage.get(`nodes.${node}`) as NodeData | null
-    else nodeData = node
+    const nodeData = nodeStorage.get(`nodes.${node}`) as NodeData | null
+    nodeLogger.info('Node.checkout')
     if (!nodeData) throw new Error('Node ID Error')
 
     return Node.create(nodeData)
   }
 
 
-  static create<T extends NodeData, R extends Node>(nodeData: T): R {
+  static create<T extends NodeData, R extends Node<T>>(nodeData: T): R {
     const { type } = nodeData
+    nodeLogger.info('Node.create')
     const TypeNode = typeNodeMap[type]
     if (!TypeNode) throw new Error('Node Type Error')
 
@@ -78,46 +76,69 @@ export class Node extends EventEmitter {
   }
 
 
-  constructor(opt: NodeData) {
+  constructor(protected options: T) {
+    nodeLogger.info('[T] node constructor')
+    nodeLogger.trace('node constructor', JSON.stringify(options))
     super()
-    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE } = opt
+    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE } = this.options
     this.type = type
     this.name = name
     this.id = id
     this.nodeState = state
 
-    this.logger = log4js.getLogger(`[NODE] ${this.id}`)
+    this.logger = log4js.getLogger(`NODE ${this.id}`)
     this.initEvent()
   }
 
 
   initEvent(): void {
-    this.on(NodeEvent.ON_STATE_CHANGE, this.handleNodeStateChange.bind(this))
-    this.on(NodeEvent.ON_ACTIVATE, this.onActivate.bind(this))
+    this.on(NodeEvent.STATE_CHANGE, this.handleNodeStateChange.bind(this))
   }
 
 
-  handleNodeStateChange(): void {
-    const eventMap = {
-      [NodeState.ACTIVATE]: NodeEvent.ON_ACTIVATE,
-      [NodeState.COMPLETE]: NodeEvent.ON_COMPLETE,
-    }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    eventMap[this.state] && this.emit(eventMap[this.state], this)
+  async handleNodeStateChange(): Promise<void> {
+    await this.save()
+  }
 
-    this.save()
+
+  register() {
+    if (this.state === NodeState.CREATE) {
+      this.state = NodeState.REGISTER
+    }
+  }
+
+
+  async activate(event: NodeFlowEvent) {
+    this.state = NodeState.ACTIVATE
+
+    this.logger.info('[T] start running ... ')
+    this.logger.trace('event: ', JSON.stringify(event))
+    try {
+      const output = await this.run(event)
+      this.complete(null, output)
+    } catch (e: unknown) {
+      this.complete(e, null)
+    }
+  }
+
+
+  run(event: NodeFlowEvent) {
+    // do something ...
+    event[this.options.scope || this.id] = 'Hello world'
+    return event
+  }
+
+
+  complete(err: null | any, event: NodeFlowEvent) {
+    this.logger.info('[T] complete ')
+    this.logger.trace(`error: ${err?.message || ''} event: ${JSON.stringify(event)}`)
+    this.state = NodeState.COMPLETE
+    this.emit(NodeEvent.COMPLETE, err, event)
   }
 
   
-  onActivate() {
-    this.ctx = null
-    this.state = NodeState.COMPLETE
-  }
-
-
-  registerFlow() {
-    this.state = NodeState.REGISTER
+  setScope (event: NodeFlowEvent, value: any) {
+    event[this.options.scope || this.id] = value
   }
 
 
@@ -140,25 +161,12 @@ export class Node extends EventEmitter {
     if (this.nodeState === state) return
     this.logger.debug(`state change ${this.state} ---> ${state}`)
     this.nodeState = state
-    this.emit(NodeEvent.ON_STATE_CHANGE, this)
+    this.emit(NodeEvent.STATE_CHANGE, this)
   }
 
 
   get state() {
     return this.nodeState
-  }
-
-
-  set ctx(ctx: unknown) {
-    this.logger.debug('ctx change [T]')
-    this.logger.trace(`ctx change ${JSON.stringify(ctx)}`)
-    this.nodeCtx = ctx
-    this.emit(NodeEvent.ON_CTX_CHANGE, this)
-  }
-
-
-  get ctx() {
-    return this.nodeCtx
   }
 }
 

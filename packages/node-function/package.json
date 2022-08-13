@@ -1,7 +1,7 @@
 {
-  "name": "@node-flow/core",
+  "name": "@node-flow/node-function",
   "version": "0.0.1-alpha.5",
-  "description": "> TODO: description",
+  "description": "node-flow function node",
   "author": "wayne <me@waynegong.cn>",
   "homepage": "",
   "license": "ISC",
@@ -21,24 +21,17 @@
     "type": "git",
     "url": "git@github.com:WayneGongCN/node-flow.git"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "readmeFile": "./README.md"
-  },
   "scripts": {
     "build:watch": "tsc -p ./tsconfig.dev.json -w",
-    "test:watch": "jest --watch",
-    "lint": "eslint src __tests__",
+    "lint": "eslint src",
     "test": "echo todo",
     "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
   },
   "dependencies": {
-    "conf": "^10.2.0",
-    "log4js": "^6.6.1",
-    "ts-jest": "^28.0.7",
-    "uuid": "^8.3.2"
+    "@node-flow/core": "^0.0.1-alpha.5",
+    "@node-flow/node-function": "^0.0.1-alpha.5",
+    "@node-flow/node-inquirer": "^0.0.1-alpha.5",
+    "vm2": "^3.9.10"
   },
-  "devDependencies": {
-    "@types/uuid": "^8.3.4"
-  }
+  "devDependencies": {}
 }

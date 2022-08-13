@@ -24,12 +24,9 @@ describe('Create flow', () => {
   })
 
   test('Flow activateNodeIndex', () => {
-    expect(flow.activatedIndex).toBe(-1)
+    expect(flow.activateNodeIdx).toBe(-1)
   })
 
-  test('Flow activateNodeID', () => {
-    expect(flow.activateNodeID).toBe(null)
-  })
 
   test('Flow activateNode', () => {
     expect(flow.activatedNode).toBe(null)
