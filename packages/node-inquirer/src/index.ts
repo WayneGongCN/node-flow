@@ -1,5 +1,4 @@
-import { Node } from '@node-flow/core'
-import { NodeData, NodeEvent, registerNode, NodeState } from '@node-flow/core/lib/node'
+import { Node, NodeData, NodeFlowEvent, registerNode } from '@node-flow/core'
 import inquirer, { Question } from 'inquirer'
 
 
@@ -8,24 +7,27 @@ export interface InquirerNodeData extends NodeData {
 }
 
 
-class InquirerNode extends Node {
+class InquirerNode extends Node<InquirerNodeData> {
   static type = 'node-inquirer'
 
-  public questions: Question[]
 
-  constructor(nodeData: InquirerNodeData) {
-    super(nodeData)
-    this.questions = nodeData.questions
-    this.on(NodeEvent.ON_ACTIVATE, this.onActivate.bind(this))
+  constructor(options: InquirerNodeData) {
+    super(options)
   }
 
-  onActivate () {
-    inquirer
-      .prompt(this.questions)
-      .then((answers: any) => {
-        this.ctx = answers
-        this.state = NodeState.COMPLETE
-      })
+
+  async run (event: NodeFlowEvent) {
+    const answers = await inquirer.prompt(this.options.questions)
+    this.setScope(event, answers)
+    return event
+  }
+
+  
+  serialize() {
+    return {
+      ...super.serialize(),
+      questions: this.options.questions
+    }
   }
 }
 
@@ -34,6 +36,4 @@ class InquirerNode extends Node {
  * 
  */
 registerNode(InquirerNode)
-
-
 export default InquirerNode
