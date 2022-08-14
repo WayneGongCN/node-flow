@@ -15,7 +15,6 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
   }
 
   async run(event: NodeFlowEvent) {
-    this.logger.info('Hello from function node', event)
     const fnStr = this.options.fnStr
     if (!fnStr) throw new Error('function error')
 
@@ -38,5 +37,4 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
 }
 
 
-registerNode(FunctionNode)
 export default FunctionNode
