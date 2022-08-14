@@ -14,6 +14,7 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
     super(options)
   }
 
+  
   async run(event: NodeFlowEvent) {
     const fnStr = this.options.fnStr
     if (!fnStr) throw new Error('function error')

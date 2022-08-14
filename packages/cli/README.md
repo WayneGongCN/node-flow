@@ -20,7 +20,7 @@ $ npm install -g @node-flow/cli
 $ nf COMMAND
 running command...
 $ nf (--version)
-@node-flow/cli/0.0.1-alpha.7 linux-x64 node-v16.14.2
+@node-flow/cli/0.0.1-alpha.9 linux-x64 node-v16.14.2
 $ nf --help [COMMAND]
 USAGE
   $ nf COMMAND
@@ -60,7 +60,7 @@ DESCRIPTION
   Create a Flow
 ```
 
-_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.7/dist/commands/flow/index.js)_
+_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.9/dist/commands/flow/index.js)_
 
 ## `nf flow activate [FLOWID]`
 
