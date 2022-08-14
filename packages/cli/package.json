@@ -1,6 +1,6 @@
 {
   "name": "@node-flow/cli",
-  "version": "0.0.1-alpha.5",
+  "version": "0.0.1-alpha.7",
   "description": "oclif example Hello World CLI",
   "author": "wayne @WayneGongCN",
   "bin": {
@@ -21,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@node-flow/core": "^0.0.1-alpha.5",
+    "@node-flow/core": "^0.0.1-alpha.7",
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1"

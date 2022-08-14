@@ -20,7 +20,7 @@ $ npm install -g @node-flow/cli
 $ nf COMMAND
 running command...
 $ nf (--version)
-@node-flow/cli/0.0.1-alpha.5 linux-x64 node-v16.14.2
+@node-flow/cli/0.0.1-alpha.7 linux-x64 node-v16.14.2
 $ nf --help [COMMAND]
 USAGE
   $ nf COMMAND
@@ -31,7 +31,7 @@ USAGE
 <!-- commands -->
 * [`nf flow [FLOWID]`](#nf-flow-flowid)
 * [`nf flow activate [FLOWID]`](#nf-flow-activate-flowid)
-* [`nf flow create FLOWNAME`](#nf-flow-create-flowname)
+* [`nf flow create`](#nf-flow-create)
 * [`nf flow next [FLOWID]`](#nf-flow-next-flowid)
 * [`nf flow remove FLOWNAME`](#nf-flow-remove-flowname)
 * [`nf help [COMMAND]`](#nf-help-command)
@@ -60,7 +60,7 @@ DESCRIPTION
   Create a Flow
 ```
 
-_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.5/dist/commands/flow/index.js)_
+_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.7/dist/commands/flow/index.js)_
 
 ## `nf flow activate [FLOWID]`
 
@@ -77,16 +77,16 @@ DESCRIPTION
   Create a Flow
 ```
 
-## `nf flow create FLOWNAME`
+## `nf flow create`
 
 Create a Flow
 
 ```
 USAGE
-  $ nf flow create [FLOWNAME] [-n <value>]
+  $ nf flow create [--raw <value>]
 
 FLAGS
-  -n, --node=<value>...
+  --raw=<value>
 
 DESCRIPTION
   Create a Flow
@@ -116,7 +116,7 @@ USAGE
   $ nf flow remove [FLOWNAME] [--nodes <value>]
 
 FLAGS
-  --nodes=<value>  [default: []]
+  --nodes=<value>...
 
 DESCRIPTION
   Remove a Flow

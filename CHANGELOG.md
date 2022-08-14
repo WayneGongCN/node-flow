@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.0.1-alpha.7 (2022-08-14)
+
+
+### Features
+
+* 🎸 add inquirer node ([#25](https://github.com/WayneGongCN/node-flow/issues/25)) ([8d8e4bc](https://github.com/WayneGongCN/node-flow/commit/8d8e4bc89a05bcda3abcf23b5c4ee573c000da4d)), closes [#4](https://github.com/WayneGongCN/node-flow/issues/4)
+* 🎸 add node-function ([#31](https://github.com/WayneGongCN/node-flow/issues/31)) ([09f4aaf](https://github.com/WayneGongCN/node-flow/commit/09f4aaf88c518563234fa7dcadc738d97b43cec8)), closes [#24](https://github.com/WayneGongCN/node-flow/issues/24) [#30](https://github.com/WayneGongCN/node-flow/issues/30)
+
+
+
+
+
 ## 0.0.1-alpha.5 (2022-08-07)
 
 **Note:** Version bump only for package node-flow
