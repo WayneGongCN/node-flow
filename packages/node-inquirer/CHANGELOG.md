@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.1-alpha.8](https://github.com/WayneGongCN/node-flow/compare/v0.0.1-alpha.7...v0.0.1-alpha.8) (2022-08-14)
+
+**Note:** Version bump only for package @node-flow/node-inquirer
+
+
+
+
+
 ## 0.0.1-alpha.7 (2022-08-14)
 
 

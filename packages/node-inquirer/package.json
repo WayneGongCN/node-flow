@@ -1,6 +1,6 @@
 {
   "name": "@node-flow/node-inquirer",
-  "version": "0.0.1-alpha.7",
+  "version": "0.0.1-alpha.8",
   "description": "node-flow inquirer node",
   "author": "wayne <me@waynegong.cn>",
   "homepage": "",
@@ -29,7 +29,7 @@
     "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
   },
   "dependencies": {
-    "@node-flow/core": "^0.0.1-alpha.7",
+    "@node-flow/core": "^0.0.1-alpha.8",
     "inquirer": "8"
   },
   "devDependencies": {
