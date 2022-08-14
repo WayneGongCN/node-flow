@@ -27,7 +27,6 @@ export enum FlowState {
 
 export enum FlowEvent {
   STATE_CHANGE = 'STATE_CHANGE',
-  REGISTER = 'REGISTER',
   NEXT = 'NEXT'
 }
 
@@ -99,7 +98,8 @@ export class Flow extends EventEmitter {
     this.logger = log4js.getLogger(`FLOW ${this.id}`)
 
     this.initEvent()
-    this.registerNodes(nodes)
+    this.createNodes(nodes)
+    this.save()
   }
 
 
@@ -118,8 +118,13 @@ export class Flow extends EventEmitter {
     this.save()
   }
 
+
+  /**
+   * 
+   */
   async handleNodeComplete(err: any, event: NodeFlowEvent) {
     this.event = event
+    
     if (this.activateNodeIdx >= this.nodeList.length - 1) this.state = FlowState.END
     else await this.save()
   }
@@ -169,15 +174,13 @@ export class Flow extends EventEmitter {
   /**
    * 
    */
-  registerNodes(nodes: FlowData['nodes']): void {
+  createNodes(nodes: FlowData['nodes']): void {
     this.nodeList = nodes.map((nodeDataOrID: string | NodeData) => {
       const node = typeof nodeDataOrID === 'string' ? Node.checkout(nodeDataOrID) : Node.create(nodeDataOrID)
       this.nodeMap[node.id] = node
-      node.register()
       node.on(NodeEvent.COMPLETE, this.handleNodeComplete.bind(this))
       return node
     })
-    this.emit(FlowEvent.REGISTER, this)
   }
 
 
@@ -223,8 +226,6 @@ export class Flow extends EventEmitter {
   get state() {
     return this.flowState
   }
-
-
 
 
   /**

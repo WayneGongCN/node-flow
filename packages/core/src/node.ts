@@ -15,7 +15,6 @@ export const typeNodeMap: Record<string, typeof Node> = {}
 export function registerNode(TypeNode: any) {
   nodeLogger.log('registerNode: ', TypeNode.type)
   const type = TypeNode.type
-  if (typeNodeMap[type]) throw new Error(`${type} Node extended`)
   typeNodeMap[type] = TypeNode
 }
 
@@ -38,7 +37,6 @@ export enum NodeEvent {
 
 export enum NodeState {
   CREATE = 'CREATE',
-  REGISTER = 'REGISTER',
   ACTIVATE = 'ACTIVATE',
   COMPLETE = 'COMPLETE'
 }
@@ -51,6 +49,7 @@ export class Node<T extends NodeData> extends EventEmitter {
   public name: string
   public type: string
   public nodeState: NodeState
+  public scope: string
   public logger: Logger
 
 
@@ -66,8 +65,13 @@ export class Node<T extends NodeData> extends EventEmitter {
   static create<T extends NodeData, R extends Node<T>>(nodeData: T): R {
     const { type } = nodeData
     nodeLogger.info('Node.create')
-    const TypeNode = typeNodeMap[type]
-    if (!TypeNode) throw new Error('Node Type Error')
+    let TypeNode = typeNodeMap[type]
+    if (!TypeNode) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const requiredNode = require(`@node-flow/${type}`).default
+      registerNode(requiredNode)
+      TypeNode = requiredNode
+    }
 
     const instance = new TypeNode(nodeData)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -80,14 +84,16 @@ export class Node<T extends NodeData> extends EventEmitter {
     nodeLogger.info('[T] node constructor')
     nodeLogger.trace('node constructor', JSON.stringify(options))
     super()
-    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE } = this.options
+    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE, scope } = this.options
     this.type = type
     this.name = name
     this.id = id
     this.nodeState = state
+    this.scope = scope || id
 
     this.logger = log4js.getLogger(`NODE ${this.id}`)
     this.initEvent()
+    this.save()
   }
 
 
@@ -98,13 +104,6 @@ export class Node<T extends NodeData> extends EventEmitter {
 
   async handleNodeStateChange(): Promise<void> {
     await this.save()
-  }
-
-
-  register() {
-    if (this.state === NodeState.CREATE) {
-      this.state = NodeState.REGISTER
-    }
   }
 
 
@@ -138,7 +137,7 @@ export class Node<T extends NodeData> extends EventEmitter {
 
   
   setScope (event: NodeFlowEvent, value: any) {
-    event[this.options.scope || this.id] = value
+    event[this.scope || this.id] = value
   }
 
 
@@ -148,6 +147,7 @@ export class Node<T extends NodeData> extends EventEmitter {
       name: this.name,
       state: this.state,
       type: this.type,
+      scope: this.scope
     }
   }
 

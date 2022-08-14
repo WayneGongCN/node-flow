@@ -32,8 +32,4 @@ class InquirerNode extends Node<InquirerNodeData> {
 }
 
 
-/**
- * 
- */
-registerNode(InquirerNode)
 export default InquirerNode
