@@ -1,5 +1,5 @@
 import { Node, NodeData, NodeFlowEvent, registerNode } from '@node-flow/core'
-import {NodeVM} from 'vm2'
+import { NodeVM } from 'vm2'
 
 
 export interface FunctionNodeData<P, R> extends NodeData {
@@ -18,11 +18,11 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
     const fnStr = this.options.fnStr
     if (!fnStr) throw new Error('function error')
 
-    const vm = new NodeVM({ sandbox: { console: this.logger } })
-    const fnInVM = await vm.run(fnStr)
+    const vm = new NodeVM({ sandbox: { console: this.logger }, require: { external: true } })
+    const fnInVM = await vm.run(fnStr, 'none')
 
     if (!fnInVM) throw new Error('not found module.exports function')
-    const result  = await fnInVM(event)
+    const result = await fnInVM(event)
     this.setScope(event, result)
 
     return event

@@ -1,6 +1,5 @@
 import { Command, Flags } from '@oclif/core'
-import { Flow } from '@node-flow/core'
-import { logger } from '@node-flow/core/lib/logger'
+import { Flow, logger } from '@node-flow/core'
 
 
 export default class FlowCreate extends Command {
@@ -9,21 +8,18 @@ export default class FlowCreate extends Command {
   static examples = []
 
   static flags = {
-    node: Flags.string({char: 'n', multiple: true})
-    // nodes: Flags.string({ parse: v => JSON.parse(v) }),
+    raw: Flags.string()
   }
 
-  static args = [{ name: 'flowName', required: true }]
+  static args = []
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(FlowCreate)
     logger.debug('CMD flow create params', JSON.stringify({ args, flags }))
-
-    const { flowName } = args
-    const { node = [] } = flags
-    const nodes = node.map(x => ({type: x}))
-
-    const flow = new Flow({ name: flowName, nodes })
+    const { raw } = flags
+    const flowData = JSON.parse(raw)
+    const flow = new Flow(flowData)
+    await flow.save()
     await flow.activate()
   }
 }
