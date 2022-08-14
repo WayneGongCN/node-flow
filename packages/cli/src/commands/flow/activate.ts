@@ -1,6 +1,5 @@
 import { Command } from '@oclif/core'
-import { Flow } from '@node-flow/core'
-import { logger } from '@node-flow/core/lib/logger'
+import { Flow, logger } from '@node-flow/core'
 import { getFullFlowID } from '@node-flow/core/lib/storage'
 
 

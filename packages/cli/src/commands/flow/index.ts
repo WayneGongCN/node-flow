@@ -1,6 +1,5 @@
 import { CliUx, Command, Flags } from '@oclif/core'
-import { Flow } from '@node-flow/core'
-import { logger } from '@node-flow/core/lib/logger'
+import { Flow, logger } from '@node-flow/core'
 
 
 export default class FlowList extends Command {
@@ -17,7 +16,7 @@ export default class FlowList extends Command {
   async run() {
     const { args, flags } = await this.parse(FlowList)
     logger.debug('CMD flow create params', JSON.stringify({ args, flags }))
-    
+
     // const { flowID } = args
     const { all = false } = flags
 
@@ -25,10 +24,14 @@ export default class FlowList extends Command {
     if (!flowList.length) return this.log('Not found any flow')
 
     const activateFlow = await Flow.getActivatedFlow()
-    const columns = { activate: { header: 'Cur', get: (row) => row.id === activateFlow.id ? '>' : '' }, name: 'Name', state: { header: 'State', get: row => row.state }, id: { header: 'Short ID', get: row => row.id.slice(0, 8), } }
+    const columns = {
+      activate: { header: 'Cur', get: (row) => row.id === activateFlow.id ? '>' : '' },
+      name: { header: 'Flow Name' },
+      state: { header: 'State', get: row => row.state },
+      id: { header: 'Short ID', get: row => row.id.slice(0, 8), },
+      process: { header: 'Process', get: row => `${row.activateNodeIdx + 1}/${row.nodes.length}` }
+    }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     CliUx.ux.table(flowList, columns)
   }
 }

@@ -1,6 +1,5 @@
 import { Command, Flags } from '@oclif/core'
-import { Flow } from '@node-flow/core'
-import { logger } from '@node-flow/core/lib/logger'
+import { Flow, logger } from '@node-flow/core'
 
 
 export default class FlowRemove extends Command {
@@ -10,22 +9,19 @@ export default class FlowRemove extends Command {
 
   static flags = {
     nodes: Flags.string({
-      default: '[]',
-      parse: v => JSON.parse(v)
+      multiple: true
     })
   }
 
-  static args = [{ name: 'flowName', required: true }]
+  static args = [{ name: 'flowID', required: true }]
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(FlowRemove)
     logger.debug('CMD flow create params', JSON.stringify({ args, flags }))
-
-    const { flowName } = args
-    const { nodes } = flags
+    const { flowID } = args
 
 
-    const flow = new Flow({ name: flowName, nodes })
+    const flow = await Flow.checkoutFlow(flowID)
     await flow.remove()
   }
 }
