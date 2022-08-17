@@ -1,4 +1,4 @@
-import { Node, NodeData, NodeFlowEvent, registerNode } from '@node-flow/core'
+import { Node, NodeData, NodeFlowEvent } from '@node-flow/core'
 import inquirer, { Question } from 'inquirer'
 
 
@@ -16,13 +16,13 @@ class InquirerNode extends Node<InquirerNodeData> {
   }
 
 
-  async run (event: NodeFlowEvent) {
-    const answers = await inquirer.prompt(this.options.questions)
-    this.setScope(event, answers)
+  async run(event: NodeFlowEvent): Promise<NodeFlowEvent> {
+    const answer = await inquirer.prompt(this.options.questions || event.payload)
+    event.payload = answer
     return event
   }
 
-  
+
   serialize() {
     return {
       ...super.serialize(),

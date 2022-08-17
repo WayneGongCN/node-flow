@@ -31,7 +31,10 @@ export enum FlowEvent {
 }
 
 
-export type NodeFlowEvent = any
+export type NodeFlowEvent = {
+  id: string;
+  payload?: any;
+}
 
 
 export class Flow extends EventEmitter {
@@ -83,39 +86,22 @@ export class Flow extends EventEmitter {
    * 
    */
   constructor(opt: FlowData) {
-    flowLogger.info('[T] flow constructor')
-    flowLogger.trace('flow constructor flowData: ', JSON.stringify(opt))
     super()
     this.nodeMap = {}
     this.nodeList = []
 
-    const { name = 'untitled', nodes = [], id = uuid(), state = FlowState.CREATE, activateNodeIdx = -1, event = { _id: uuid() } } = opt
+    const { name = 'untitled', nodes = [], id = uuid(), state = FlowState.CREATE, activateNodeIdx = -1, event = { id: uuid() } } = opt
     this.name = name
     this.id = id
     this.flowState = state
     this.activateNodeIdx = activateNodeIdx
     this.event = event
+
     this.logger = log4js.getLogger(`FLOW ${this.id}`)
+    this.logger.info('[T] flow constructor')
+    this.logger.trace('flow constructor flowData: ', JSON.stringify(opt))
 
-    this.initEvent()
     this.createNodes(nodes)
-    this.save()
-  }
-
-
-  /**
-   * 
-   */
-  initEvent() {
-    this.on(FlowEvent.STATE_CHANGE, this.handleFlowStateChange.bind(this))
-  }
-
-
-  /**
-   * 
-   */
-  handleFlowStateChange() {
-    this.save()
   }
 
 
@@ -124,9 +110,8 @@ export class Flow extends EventEmitter {
    */
   async handleNodeComplete(err: any, event: NodeFlowEvent) {
     this.event = event
-    
+
     if (this.activateNodeIdx >= this.nodeList.length - 1) this.state = FlowState.END
-    else await this.save()
   }
 
 
@@ -201,8 +186,7 @@ export class Flow extends EventEmitter {
     }
 
     const node = this.nodeList[this.activateNodeIdx]
-    node.activate(this.event)
-    await this.save()
+    await node.activate(this.event)
 
     this.emit(FlowEvent.NEXT, this)
     return node

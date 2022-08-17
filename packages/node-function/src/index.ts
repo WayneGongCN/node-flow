@@ -1,4 +1,4 @@
-import { Node, NodeData, NodeFlowEvent, registerNode } from '@node-flow/core'
+import { Node, NodeData, NodeFlowEvent } from '@node-flow/core'
 import { NodeVM } from 'vm2'
 
 
@@ -14,7 +14,7 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
     super(options)
   }
 
-  
+
   async run(event: NodeFlowEvent) {
     const fnStr = this.options.fnStr
     if (!fnStr) throw new Error('function error')
@@ -24,10 +24,11 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
 
     if (!fnInVM) throw new Error('not found module.exports function')
     const result = await fnInVM(event)
-    this.setScope(event, result)
-
+    event.payload = result
+    
     return event
   }
+
 
   serialize() {
     return {
