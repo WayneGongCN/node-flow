@@ -24,7 +24,6 @@ export interface NodeData {
   name?: string;
   id?: string;
   state?: NodeState;
-  scope?: string;
 }
 
 
@@ -41,15 +40,17 @@ export enum NodeState {
   COMPLETE = 'COMPLETE'
 }
 
+export interface INode {
+  run: (e: NodeFlowEvent) => Promise<NodeFlowEvent>;
+}
 
-export class Node<T extends NodeData> extends EventEmitter {
+export class Node<T extends NodeData> extends EventEmitter implements INode {
   static type = 'node'
 
   public id: string
   public name: string
   public type: string
   public nodeState: NodeState
-  public scope: string
   public logger: Logger
 
 
@@ -81,29 +82,16 @@ export class Node<T extends NodeData> extends EventEmitter {
 
 
   constructor(protected options: T) {
-    nodeLogger.info('[T] node constructor')
-    nodeLogger.trace('node constructor', JSON.stringify(options))
     super()
-    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE, scope } = this.options
+    const { type, name = 'untitled', id = uuid(), state = NodeState.CREATE } = this.options
     this.type = type
     this.name = name
     this.id = id
     this.nodeState = state
-    this.scope = scope || id
 
     this.logger = log4js.getLogger(`NODE ${this.id}`)
-    this.initEvent()
-    this.save()
-  }
-
-
-  initEvent(): void {
-    this.on(NodeEvent.STATE_CHANGE, this.handleNodeStateChange.bind(this))
-  }
-
-
-  async handleNodeStateChange(): Promise<void> {
-    await this.save()
+    this.logger.info('[T] node constructor')
+    this.logger.trace('node constructor', JSON.stringify(options))
   }
 
 
@@ -116,14 +104,15 @@ export class Node<T extends NodeData> extends EventEmitter {
       const output = await this.run(event)
       this.complete(null, output)
     } catch (e: unknown) {
-      this.complete(e, null)
+      this.complete(e, event)
     }
   }
 
 
-  run(event: NodeFlowEvent) {
+  async run(event: NodeFlowEvent): Promise<NodeFlowEvent> {
     // do something ...
-    event[this.options.scope || this.id] = 'Hello world'
+    event.payload = 'Hello world'
+
     return event
   }
 
@@ -135,11 +124,6 @@ export class Node<T extends NodeData> extends EventEmitter {
     this.emit(NodeEvent.COMPLETE, err, event)
   }
 
-  
-  setScope (event: NodeFlowEvent, value: any) {
-    event[this.scope || this.id] = value
-  }
-
 
   serialize(): NodeData {
     return {
@@ -147,7 +131,6 @@ export class Node<T extends NodeData> extends EventEmitter {
       name: this.name,
       state: this.state,
       type: this.type,
-      scope: this.scope
     }
   }
 
