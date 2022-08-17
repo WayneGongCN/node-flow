@@ -20,7 +20,7 @@ $ npm install -g @node-flow/cli
 $ nf COMMAND
 running command...
 $ nf (--version)
-@node-flow/cli/0.0.1-alpha.9 linux-x64 node-v16.14.2
+@node-flow/cli/0.0.1-alpha.10 linux-x64 node-v16.14.2
 $ nf --help [COMMAND]
 USAGE
   $ nf COMMAND
@@ -33,7 +33,7 @@ USAGE
 * [`nf flow activate [FLOWID]`](#nf-flow-activate-flowid)
 * [`nf flow create`](#nf-flow-create)
 * [`nf flow next [FLOWID]`](#nf-flow-next-flowid)
-* [`nf flow remove FLOWNAME`](#nf-flow-remove-flowname)
+* [`nf flow remove FLOWID`](#nf-flow-remove-flowid)
 * [`nf help [COMMAND]`](#nf-help-command)
 * [`nf plugins`](#nf-plugins)
 * [`nf plugins:install PLUGIN...`](#nf-pluginsinstall-plugin)
@@ -60,7 +60,7 @@ DESCRIPTION
   Create a Flow
 ```
 
-_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.9/dist/commands/flow/index.js)_
+_See code: [dist/commands/flow/index.js](https://github.com/WayneGongCN/hello-world/blob/v0.0.1-alpha.10/dist/commands/flow/index.js)_
 
 ## `nf flow activate [FLOWID]`
 
@@ -107,13 +107,13 @@ EXAMPLES
   flow next
 ```
 
-## `nf flow remove FLOWNAME`
+## `nf flow remove FLOWID`
 
 Remove a Flow
 
 ```
 USAGE
-  $ nf flow remove [FLOWNAME] [--nodes <value>]
+  $ nf flow remove [FLOWID] [--nodes <value>]
 
 FLAGS
   --nodes=<value>...
