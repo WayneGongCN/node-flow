@@ -23,10 +23,7 @@ class FunctionNode<P, R> extends Node<FunctionNodeData<P, R>> {
     const fnInVM = await vm.run(fnStr, 'none')
 
     if (!fnInVM) throw new Error('not found module.exports function')
-    const result = await fnInVM(event)
-    event.payload = result
-    
-    return event
+    return (await fnInVM(event)) as NodeFlowEvent
   }
 
 
