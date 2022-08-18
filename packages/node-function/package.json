@@ -1,6 +1,6 @@
 {
   "name": "@node-flow/node-function",
-  "version": "0.0.1-alpha.9",
+  "version": "0.0.1-alpha.11",
   "description": "node-flow function node",
   "author": "wayne <me@waynegong.cn>",
   "homepage": "",
@@ -28,7 +28,7 @@
     "build": "rm -fr ./lib && tsc -p ./tsconfig.prod.json"
   },
   "dependencies": {
-    "@node-flow/core": "^0.0.1-alpha.9",
+    "@node-flow/core": "^0.0.1-alpha.11",
     "vm2": "^3.9.10"
   }
 }
