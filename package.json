@@ -18,7 +18,7 @@
     "lint": "lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build --skip-nx-cache",
-    "prerelease": "lerna  version prerelease --conventional-commits --conventional-prerelease --amend",
+    "prerelease": "lerna  version prerelease --conventional-commits --conventional-prerelease",
     "prepare": "husky install"
   },
   "devDependencies": {
